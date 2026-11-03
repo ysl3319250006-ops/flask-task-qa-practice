@@ -1,50 +1,48 @@
-# Task Manager Using Flask
-# Project README
+# Flask 任务管理功能测试练习
 
-This project consists of a simple task manager web application developed using Flask, a micro web framework for Python. The application allows users to manage tasks, including adding, editing, and deleting tasks. It utilizes SQLAlchemy as an Object-Relational Mapping (ORM) tool to interact with a SQLite database.
+本仓库基于 [billy-enrizky/Flask-Task-Manager](https://github.com/billy-enrizky/Flask-Task-Manager) 的 MIT 许可项目改造。原项目实现了任务的新增、编辑、删除与列表展示；原作者版权声明见 LICENSE。
 
-## Project Structure
+## 本次练习内容
 
-The project includes several files and directories:
+- 使用 pytest 和 Flask 测试客户端检查真实应用的请求和数据库结果。
+- 覆盖新增任务、空标题、空描述、编辑持久化、删除确认和不存在的任务 6 个场景。
+- 为每条用例创建独立 SQLite 内存数据库，测试结束后清理并恢复原数据库连接。
+- 更新依赖清单，补充测试和运行说明。
 
-### app.py
+本次本机执行结果：6 条通过；SQLAlchemy 对原项目的 Query.get 用法给出了弃用提示。测试时关闭 CSRF，仅用于验证业务流程，不代表完成安全、并发或浏览器兼容测试。
 
-This is the main Python script that initializes the Flask application. It configures the secret key and database URI, sets up the SQLAlchemy database, and imports the routes from the `routes.py` file. The Flask app is run with debugging enabled when this script is executed.
+## 快速开始
 
-### forms.py
+需要 Python 3.9 或更高版本：
 
-This file defines Flask-WTF forms used in the application for user input. It includes forms for adding and editing tasks. These forms handle data validation and submission.
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m pytest tests -q
+```
 
-### models.py
+Windows 用户可使用 .venv\Scripts\activate 激活环境。
 
-The `models.py` file defines the database model used in the application. It includes a `Task` class with attributes such as `id`, `title`, `date`, and `desc` to represent tasks. This class is used for creating and querying the database.
+## 测试场景
 
-### routes.py
+| 场景 | 操作 | 预期 |
+| --- | --- | --- |
+| 新增 | 输入标题和描述 | 页面和数据库包含新任务 |
+| 必填校验 | 标题或描述为空 | 不产生新任务 |
+| 编辑 | 修改标题与描述 | 数据库保存新值 |
+| 删除 | 先访问确认页，再提交删除 | GET 不删除，POST 后记录消失 |
+| 不存在的任务 | 访问无效 ID | 显示未找到提示，数据不变 |
 
-In `routes.py`, you'll find the routes and views for the Flask application. It defines routes for displaying the task list, adding tasks, editing tasks, and deleting tasks. Views are implemented using Flask's render_template function.
+## 关键复习问题
 
-### Templates (HTML files)
+- 为什么使用内存数据库？隔离测试数据，避免改动原数据库，便于重复执行。
+- 为什么不仅检查状态码？还应核对页面内容或数据库状态，确认业务结果。
+- 为什么 GET 删除确认页之后要查询数据库？确保仅访问页面不会删除任务。
+- 测试有什么限制？没有覆盖 CSRF、防并发冲突、完整浏览器交互与生产部署。
 
-Several HTML templates are used to render the web pages. They include:
+## 本地演示
 
-- **base.html:** The base template for all pages. It includes navigation links and handles message flashing.
-- **add.html:** The template for adding a new task.
-- **delete.html:** The template for confirming task deletion.
-- **edit.html:** The template for editing an existing task.
-- **index.html:** The main page displaying the list of tasks.
+原项目适合学习用途，含示例密钥和简化配置，不应直接用于生产。若希望本地打开页面，先在应用上下文中执行 db.create_all()，再运行 python app.py 并访问 http://127.0.0.1:5000/。
 
-## Usage
-
-To run the project:
-
-1. Ensure you have Python and the required libraries installed.
-2. Open your command-line interface.
-3. Navigate to the project directory.
-4. Execute `python app.py`.
-5. Open a web browser and access the application at `http://127.0.0.1:5000/`.
-
-## Dependencies
-
-- Flask: A micro web framework for Python.
-- Flask-WTF: An integration of the WTForms library for Flask.
-- SQLAlchemy: A SQL toolkit and Object-Relational Mapping (ORM) library.
+建议亲自运行、阅读测试并说明本次改造与原项目的关系后，再按实际参与情况介绍。
