@@ -1,6 +1,4 @@
-flask
-flask_sqlalchemy
-flask_wtf
-wtforms
-wtforms.validators
-datetime
+Flask>=3.0,<4
+Flask-SQLAlchemy>=3.1,<4
+Flask-WTF>=1.2,<2
+pytest>=8,<10
